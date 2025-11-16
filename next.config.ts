@@ -1,13 +1,16 @@
-import {withSentryConfig} from "@sentry/nextjs";
+import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 import { hostname } from "os";
 
 const nextConfig: NextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  reactCompiler: true,
+  cacheComponents: true,
   images: {
     remotePatterns: [{ hostname: "img.clerk.com" }],
+  },
+  experimental: {
+    turbopackFileSystemCacheForBuild: true,
+    turbopackFileSystemCacheForDev: true,
   },
 };
 
