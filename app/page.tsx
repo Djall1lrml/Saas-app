@@ -1,3 +1,4 @@
+"use server";
 import CompanionCard from "@/components/CompanionCard";
 import CompanionsList from "@/components/CompanonsList";
 import CTA from "@/components/CTA";
