@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,20 +11,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/src/components/ui/form";
-import { Input } from "@/src/components/ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/src/components/ui/select";
-import { subjects } from "@/src/constants";
-import { Textarea } from "@/src/components/ui/textarea";
-import { createCompanion } from "@/src/lib/actions/companion.action";
+} from "@/components/ui/select";
+import { subjects } from "@/constants";
+import { Textarea } from "@/components/ui/textarea";
+import { createCompanion } from "@/lib/actions/companion.action";
 import { redirect } from "next/navigation";
-import { create } from "domain";
 const formSchema = z.object({
   name: z
     .string()

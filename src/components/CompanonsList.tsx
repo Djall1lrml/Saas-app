@@ -1,15 +1,13 @@
-import React from "react";
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/src/components/ui/table";
-import { cn } from "@/src/lib/utils";
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -67,7 +65,7 @@ const CompanionsList = ({
                   >
                     {/* Desktop: Icon + Text */}
                     <div
-                      className="hidden md:flex size-[72px] items-center justify-center rounded-lg flex-shrink-0"
+                      className="hidden md:flex size-[72px] items-center justify-center rounded-lg shrink-0"
                       style={{ backgroundColor: companion.color }}
                     >
                       <Image

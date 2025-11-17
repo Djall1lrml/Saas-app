@@ -1,18 +1,17 @@
-import React from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/src/components/ui/accordion";
+} from "@/components/ui/accordion";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import {
   getUserCompanions,
   getUserSessions,
-} from "@/src/lib/actions/companion.action";
+} from "@/lib/actions/companion.action";
 import Image from "next/image";
-import CompanionsList from "@/src/components/CompanonsList";
+import CompanionsList from "@/components/CompanonsList";
 const Profile = async () => {
   const user = await currentUser();
   if (!user) redirect("/sign-in");
@@ -20,7 +19,7 @@ const Profile = async () => {
   const sessionsRaw = await getUserSessions(user.id);
 
   // Ensure the data matches Companion[]
-  const companions: Companion[] = companionsRaw.map((item: any) => ({
+  const companions: Companion[] = companionsRaw.map((item: Companion) => ({
     id: item.id,
     name: item.name,
     topic: item.topic,
@@ -29,7 +28,7 @@ const Profile = async () => {
     duration: item.duration,
   }));
 
-  const sessionhistory: Companion[] = sessionsRaw.map((item: any) => ({
+  const sessionhistory: Companion[] = sessionsRaw.map((item: Companion) => ({
     id: item.id,
     name: item.name,
     topic: item.topic,

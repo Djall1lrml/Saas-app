@@ -1,9 +1,8 @@
 "use client";
-import React from "react";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { formUrlQuery, removeKeysFromUrlQuery } from "@jsmastery/utils";
-import { subjects } from "@/src/constants";
+import { subjects } from "@/constants";
 import {
   Select,
   SelectContent,
@@ -11,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { set } from "zod";
 const SubjectFilter = () => {
   const pathname = usePathname();
   const router = useRouter();

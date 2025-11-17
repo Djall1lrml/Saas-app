@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { cn, configureAssistant, getSubjectColor } from "@/src/lib/utils";
-import { vapi } from "@/src/lib/vapi.sdk";
-import Image from "next/image";
-import Lottie, { LottieRefCurrentProps } from "lottie-react";
-import soundwaves from "@/constants/soundwaves.json";
-import { addToSessionHistory } from "@/src/lib/actions/companion.action";
+import { useEffect, useRef, useState } from 'react';
+import { cn, configureAssistant, getSubjectColor } from '@/lib/utils';
+import { vapi } from '@/lib/vapi.sdk';
+import Image from 'next/image';
+import Lottie, { LottieRefCurrentProps } from 'lottie-react';
+import soundwaves from '@/constants/soundwaves.json';
+import { addToSessionHistory } from '@/lib/actions/companion.action';
 
 enum CallStatus {
-  INACTIVE = "INACTIVE",
-  CONNECTING = "CONNECTING",
-  ACTIVE = "ACTIVE",
-  FINISHED = "FINISHED",
+  INACTIVE = 'INACTIVE',
+  CONNECTING = 'CONNECTING',
+  ACTIVE = 'ACTIVE',
+  FINISHED = 'FINISHED',
 }
 
 const CompanionComponent = ({
@@ -44,20 +44,20 @@ const CompanionComponent = ({
 
   useEffect(() => {
     const onCallStart = () => {
-      console.log("Call started"); // Added for debugging
+      console.log('Call started'); // Added for debugging
       setCallStatus(CallStatus.ACTIVE);
     };
 
     const onCallEnd = () => {
-      console.log("Call ended"); // Added for debugging
+      console.log('Call ended'); // Added for debugging
       setCallStatus(CallStatus.FINISHED);
       addToSessionHistory(companionId);
     };
 
     const onMessage = (message: Message) => {
-      if (message.type === "transcript" && message.transcriptType === "final") {
+      if (message.type === 'transcript' && message.transcriptType === 'final') {
         const newMessage = { role: message.role, content: message.transcript };
-        setMessages((prev) => [newMessage, ...prev]);
+        setMessages(prev => [newMessage, ...prev]);
       }
     };
 
@@ -66,41 +66,41 @@ const CompanionComponent = ({
 
     // Enhanced error handling for Krisp and ejections
     const onError = (error: Error) => {
-      console.error("VAPI Error:", error);
+      console.error('VAPI Error:', error);
       if (
-        error.message.includes("WASM_OR_WORKER_NOT_READY") ||
-        error.message.includes("krisp")
+        error.message.includes('WASM_OR_WORKER_NOT_READY') ||
+        error.message.includes('krisp')
       ) {
         alert(
-          "Audio processor error. Please refresh, grant microphone access, and try again."
+          'Audio processor error. Please refresh, grant microphone access, and try again.'
         );
         setCallStatus(CallStatus.INACTIVE);
         vapi.stop(); // Force stop to clean up
       } else if (
-        error.message.includes("ejection") ||
-        error.message.includes("Meeting has ended")
+        error.message.includes('ejection') ||
+        error.message.includes('Meeting has ended')
       ) {
-        console.warn("Call ended unexpectedly. Check network or permissions.");
+        console.warn('Call ended unexpectedly. Check network or permissions.');
         setCallStatus(CallStatus.FINISHED);
       }
     };
 
-    vapi.on("call-start", onCallStart);
-    vapi.on("call-end", onCallEnd);
-    vapi.on("message", onMessage);
-    vapi.on("error", onError);
-    vapi.on("speech-start", onSpeechStart);
-    vapi.on("speech-end", onSpeechEnd);
+    vapi.on('call-start', onCallStart);
+    vapi.on('call-end', onCallEnd);
+    vapi.on('message', onMessage);
+    vapi.on('error', onError);
+    vapi.on('speech-start', onSpeechStart);
+    vapi.on('speech-end', onSpeechEnd);
 
     // Added microphone permission check on mount
     const checkPermissions = async () => {
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log("Microphone access granted");
+        console.log('Microphone access granted');
       } catch (err) {
-        console.error("Microphone access denied:", err);
+        console.error('Microphone access denied:', err);
         alert(
-          "Microphone access is required for voice calls. Please enable it in browser settings."
+          'Microphone access is required for voice calls. Please enable it in browser settings.'
         );
       }
     };
@@ -110,19 +110,19 @@ const CompanionComponent = ({
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (callStatus === CallStatus.ACTIVE) {
         e.preventDefault();
-        e.returnValue = "Are you sure? This will end the call.";
+        e.returnValue = 'Are you sure? This will end the call.';
       }
     };
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
-      vapi.off("call-start", onCallStart);
-      vapi.off("call-end", onCallEnd);
-      vapi.off("message", onMessage);
-      vapi.off("error", onError);
-      vapi.off("speech-start", onSpeechStart);
-      vapi.off("speech-end", onSpeechEnd);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      vapi.off('call-start', onCallStart);
+      vapi.off('call-end', onCallEnd);
+      vapi.off('message', onMessage);
+      vapi.off('error', onError);
+      vapi.off('speech-start', onSpeechStart);
+      vapi.off('speech-end', onSpeechEnd);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [callStatus]); // Added callStatus to dependency array for beforeunload
 
@@ -137,19 +137,18 @@ const CompanionComponent = ({
 
     const assistantOverrides = {
       variableValues: { subject, topic, style },
-      clientMessages: ["transcript"],
-      serverMessages: ["conversation-update", "speech-update"], // Updated from [] to specific events to avoid issues
+      clientMessages: 'transcript' as const,
+      serverMessages: 'conversation-update' as const,
     };
     try {
       // Small delay to ensure WASM/Krisp is ready
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      // @ts-expect-error
+      await new Promise(resolve => setTimeout(resolve, 500));
       await vapi.start(configureAssistant(voice, style), assistantOverrides);
     } catch (error: any) {
-      console.error("Failed to start call:", error);
+      console.error('Failed to start call:', error);
       setCallStatus(CallStatus.INACTIVE);
-      if (error.message.includes("WASM_OR_WORKER_NOT_READY")) {
-        alert("Audio setup failed. Try refreshing the page.");
+      if (error.message.includes('WASM_OR_WORKER_NOT_READY')) {
+        alert('Audio setup failed. Try refreshing the page.');
       }
     }
   };
@@ -158,26 +157,26 @@ const CompanionComponent = ({
     try {
       vapi.stop();
     } catch (error) {
-      console.error("Error stopping call:", error);
+      console.error('Error stopping call:', error);
     }
   };
   return (
-    <section className="flex flex-col h-[70vh]">
-      <section className="flex gap-8 max-sm:flex-col">
-        <div className="companion-section">
+    <section className='flex flex-col h-[70vh]'>
+      <section className='flex gap-8 max-sm:flex-col'>
+        <div className='companion-section'>
           <div
-            className="companion-avatar"
+            className='companion-avatar'
             style={{ backgroundColor: getSubjectColor(subject) }}
           >
             <div
               className={cn(
-                "absolute transition-opacity duration-1000",
+                'absolute transition-opacity duration-1000',
                 callStatus === CallStatus.FINISHED ||
                   callStatus === CallStatus.INACTIVE
-                  ? "opacity-100"
-                  : "opacity-0",
+                  ? 'opacity-100'
+                  : 'opacity-0',
                 callStatus === CallStatus.CONNECTING &&
-                  "opacity-100 animate-pulse"
+                  'opacity-100 animate-pulse'
               )}
             >
               <Image
@@ -185,84 +184,84 @@ const CompanionComponent = ({
                 alt={subject}
                 width={150}
                 height={150}
-                className="max-sm:w-fit"
+                className='max-sm:w-fit'
               />
             </div>
 
             <div
               className={cn(
-                "absolute transition-opacity duration-1000",
-                callStatus === CallStatus.ACTIVE ? "opacity-100" : "opacity-0"
+                'absolute transition-opacity duration-1000',
+                callStatus === CallStatus.ACTIVE ? 'opacity-100' : 'opacity-0'
               )}
             >
               <Lottie
                 lottieRef={lottieRef}
                 animationData={soundwaves}
                 autoplay={false}
-                className="companion-lottie"
+                className='companion-lottie'
               />
             </div>
           </div>
-          <p className="font-bold text-2xl">{name}</p>
+          <p className='font-bold text-2xl'>{name}</p>
         </div>
 
-        <div className="user-section">
-          <div className="user-avatar">
+        <div className='user-section'>
+          <div className='user-avatar'>
             <Image
               src={userImage}
               alt={userName}
               width={130}
               height={130}
-              className="rounded-lg"
+              className='rounded-lg'
             />
-            <p className="font-bold text-2xl">{userName}</p>
+            <p className='font-bold text-2xl'>{userName}</p>
           </div>
           <button
-            className="btn-mic"
+            className='btn-mic'
             onClick={toggleMicrophone}
             disabled={callStatus !== CallStatus.ACTIVE}
           >
             <Image
-              src={isMuted ? "/icons/mic-off.svg" : "/icons/mic-on.svg"}
-              alt="mic"
+              src={isMuted ? '/icons/mic-off.svg' : '/icons/mic-on.svg'}
+              alt='mic'
               width={36}
               height={36}
             />
-            <p className="max-sm:hidden">
-              {isMuted ? "Turn on microphone" : "Turn off microphone"}
+            <p className='max-sm:hidden'>
+              {isMuted ? 'Turn on microphone' : 'Turn off microphone'}
             </p>
           </button>
           <button
             className={cn(
-              "rounded-lg py-2 cursor-pointer transition-colors w-full text-white",
-              callStatus === CallStatus.ACTIVE ? "bg-red-700" : "bg-primary",
-              callStatus === CallStatus.CONNECTING && "animate-pulse"
+              'rounded-lg py-2 cursor-pointer transition-colors w-full text-white',
+              callStatus === CallStatus.ACTIVE ? 'bg-red-700' : 'bg-primary',
+              callStatus === CallStatus.CONNECTING && 'animate-pulse'
             )}
             onClick={
               callStatus === CallStatus.ACTIVE ? handleDisconnect : handleCall
             }
           >
             {callStatus === CallStatus.ACTIVE
-              ? "End Session"
+              ? 'End Session'
               : callStatus === CallStatus.CONNECTING
-              ? "Connecting"
-              : "Start Session"}
+              ? 'Connecting'
+              : 'Start Session'}
           </button>
         </div>
       </section>
 
-      <section className="transcript">
-        <div className="transcript-message no-scrollbar">
+      <section className='transcript'>
+        <div className='transcript-message no-scrollbar'>
           {messages.map((message, index) => {
-            if (message.role === "assistant") {
+            if (message.role === 'assistant') {
               return (
-                <p key={index} className="max-sm:text-sm">
-                  {name.split(" ")[0].replace(/[.,]/g, "")}: {message.content}
+                <p key={index} className='max-sm:text-sm'>
+                  {name.split(' ')[0].replace(/[.,]/g, '')}: {message.content}
                 </p>
               );
             } else {
               return (
-                <p key={index} className="text-primary max-sm:text-sm">
+                <p key={index} className='text-primary max-sm:text-sm'>
                   {userName}: {message.content}
                 </p>
               );
@@ -270,7 +269,7 @@ const CompanionComponent = ({
           })}
         </div>
 
-        <div className="transcript-fade" />
+        <div className='transcript-fade' />
       </section>
     </section>
   );

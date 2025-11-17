@@ -1,11 +1,11 @@
-import { ClerkProvider } from "@clerk/nextjs";
-import { Suspense } from "react";
-import "./globals.css";
-import Navbar from "@/src/components/Navbar";
+import { ClerkProvider } from '@clerk/nextjs';
+import { Suspense } from 'react';
+import './globals.css';
+import Navbar from '@/components/Navbar';
 
 export const metadata = {
-  title: "My App",
-  description: "Example App",
+  title: 'My App',
+  description: 'Example App',
 };
 
 export default function RootLayout({
@@ -14,16 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body>
-        <Suspense fallback={<div>Loading...</div>}>
-          <ClerkProvider
-            appearance={{ variables: { colorPrimary: "#fe5933" } }}
-          >
-            <Navbar />
-            {children}
-          </ClerkProvider>
-        </Suspense>
+        <ClerkProvider appearance={{ variables: { colorPrimary: '#fe5933' } }}>
+          <Navbar />
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );

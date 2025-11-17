@@ -1,12 +1,11 @@
-import CompanionCard from "@/src/components/CompanionCard";
-import CompanionsList from "@/src/components/CompanonsList";
-import CTA from "@/src/components/CTA";
-import { recentSessions } from "@/src/constants";
+import CompanionCard from '@/components/CompanionCard';
+import CompanionsList from '@/components/CompanonsList';
+import CTA from '@/components/CTA';
 import {
   getAllCompanions,
   getRecentSessions,
-} from "@/src/lib/actions/companion.action";
-import { getSubjectColor } from "@/src/lib/utils";
+} from '@/lib/actions/companion.action';
+import { getSubjectColor } from '@/lib/utils';
 
 const Page = async () => {
   const companions = await getAllCompanions({ limit: 3 });
@@ -15,8 +14,8 @@ const Page = async () => {
   return (
     <main>
       <h1>Popular Companions</h1>
-      <section className="home-section">
-        {companions.map((companion) => (
+      <section className='home-section'>
+        {companions.map((companion: Companion) => (
           <CompanionCard
             key={companion.id}
             {...companion}
@@ -24,11 +23,11 @@ const Page = async () => {
           />
         ))}
       </section>
-      <section className="home-section">
+      <section className='home-section'>
         <CompanionsList
-          title="Recently completed sessions"
+          title='Recently completed sessions'
           companions={recentSessionsCompanions}
-          className="w-2/3 max-lg:w-full"
+          className='w-2/3 max-lg:w-full'
         />
         <CTA />
       </section>
